@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `projeto_rotas`
 --
+CREATE DATABASE IF NOT EXISTS `projeto_rotas` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `projeto_rotas`;
 
 -- --------------------------------------------------------
 
