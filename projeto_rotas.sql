@@ -36,6 +36,8 @@ CREATE TABLE `alojamentos` (
   `numero` varchar(10) NOT NULL,
   `cidade` varchar(100) NOT NULL,
   `estado` varchar(2) NOT NULL,
+  `latitude` DECIMAL(9,6) NOT NULL,
+  `longitude` DECIMAL(9,6) NOT NULL,
   `data_cadastro` date NOT NULL DEFAULT curdate()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -69,6 +71,8 @@ CREATE TABLE `obras` (
   `numero` varchar(10) NOT NULL,
   `cidade` varchar(100) NOT NULL,
   `estado` varchar(2) NOT NULL,
+  `latitude` DECIMAL(9,6) NOT NULL,
+  `longitude` DECIMAL(9,6) NOT NULL,
   `data_cadastro` date NOT NULL DEFAULT curdate()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

@@ -5,7 +5,11 @@ from django.contrib.auth.hashers import make_password
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    confirmacao_senha = serializers.CharField(write_only=True)
+    confirmacao_senha = serializers.CharField(write_only=True, required=False)
+    senha = serializers.CharField(write_only=True, required=False)
+    cpf =  serializers.CharField(write_only=True, required=False)
+    email =  serializers.CharField(write_only=True, required=False)
+    nome =  serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Usuario
@@ -13,8 +17,21 @@ class UsuarioSerializer(serializers.ModelSerializer):
         extra_kwargs = {'senha': {'write_only': True}}
 
     def validate(self, data):
+        
+        obrigatorio = ['nome', 'email', 'cpf', 'senha', 'confirmacao_senha']
+        erros = {}
+
+        for campo in obrigatorio:
+            if not data.get(campo):
+                erros[campo] = [f"O campo '{campo}' é obrigatório."]
+
+        if erros:
+            raise serializers.ValidationError(erros)
+
+        # Validação senhas iguais
         if data['senha'] != data['confirmacao_senha']:
-            raise serializers.ValidationError({"senha": "As senhas não coincidem."})
+            raise serializers.ValidationError({"senha": ["As senhas não coincidem."]})
+
         return data
 
     def create(self, validated_data):

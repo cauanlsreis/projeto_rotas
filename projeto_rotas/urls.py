@@ -1,9 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
-from app import views
+
 
 urlpatterns = [
-    path('', views.home, name='home'),
+
     path('admin/', admin.site.urls),
-    path('api/', include('app.urls_api')),
+    path('api/usuarios/', include('app.usuarios.urls_api')),
+    path('api/alojamentos/', include('app.alojamentos.urls_api')),
+    path('api/obras/',include('app.obras.urls_api')),
+    path('api/veiculos/',include('app.veiculos.urls_api')),
+    path('api/funcionarios/',include('app.funcionarios.urls_api'))
 ]
