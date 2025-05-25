@@ -8,11 +8,11 @@ class AlojamentoInlineSerializer(serializers.ModelSerializer):
         fields = ['id', 'nome', 'endereco', 'numero', 'cidade', 'estado', 'latitude', 'longitude']
 
 class FuncionariosSerializer(serializers.ModelSerializer):
-    novo_alojamento = AlojamentoInlineSerializer(write_only=True, required=False)
+   
 
     class Meta:
         model = Funcionarios
-        fields = ['id', 'nome_completo', 'cpf', 'alojamento', 'novo_alojamento', 'obra', 'veiculo', 'usuario', 'data_cadastro']
+        fields = ['id', 'nome_completo', 'cpf', 'alojamento', 'obra', 'veiculo', 'usuario', 'data_cadastro']
 
     def validate(self, data):
         campos = ['nome_completo', 'cpf']
@@ -30,20 +30,7 @@ class FuncionariosSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        novo_alojamento_data = validated_data.pop('novo_alojamento', None)
-
-        if novo_alojamento_data:
-            alojamento = Alojamentos.objects.create(**novo_alojamento_data)
-        else:
-            alojamento = validated_data.get('alojamento')
-
-        funcionario = Funcionarios.objects.create(
-            nome_completo=validated_data['nome_completo'],
-            cpf=validated_data['cpf'],
-            alojamento=alojamento,
-            obra=validated_data.get('obra'),
-            veiculo=validated_data.get('veiculo'),
-            usuario=validated_data.get('usuario')
-        )
+        
+        funcionario = Funcionarios.objects.create(**validated_data)
 
         return funcionario

@@ -15,3 +15,7 @@ class FuncionariosCreateView(generics.CreateAPIView):
             "mensagem": "Funcionário cadastrado com sucesso!",
             "dados": serializer.data
         }, status=status.HTTP_201_CREATED)
+    
+class FuncionariosListView(generics.ListAPIView):
+    queryset = Funcionarios.objects.all()
+    serializer_class = FuncionariosSerializer

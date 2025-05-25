@@ -5,11 +5,11 @@ from django.contrib.auth.hashers import make_password
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    confirmacao_senha = serializers.CharField(write_only=True, required=False)
-    senha = serializers.CharField(write_only=True, required=False)
-    cpf =  serializers.CharField(write_only=True, required=False)
-    email =  serializers.CharField(write_only=True, required=False)
-    nome =  serializers.CharField(write_only=True, required=False)
+    confirmacao_senha = serializers.CharField(write_only=True, required=True)
+    senha = serializers.CharField(write_only=True, required=True)
+    cpf =  serializers.CharField(write_only=True, required=True)
+    email =  serializers.CharField(write_only=True, required=True)
+    nome =  serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = Usuario

@@ -8,10 +8,10 @@ class Funcionarios(models.Model):
     id = models.AutoField(primary_key=True)
     nome_completo = models.CharField(max_length=150)
     cpf = models.CharField(max_length=14, unique=True)
-    alojamento_id = models.ForeignKey(Alojamentos, on_delete=models.CASCADE)
-    obra_id = models.ForeignKey(Obras, on_delete=models.SET_NULL, null=True, blank=True)
-    veiculo_id = models.ForeignKey(veiculos, on_delete=models.SET_NULL, null=True, blank=True)
-    usuario_id = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    alojamento = models.ForeignKey(Alojamentos, on_delete=models.CASCADE)
+    obra = models.ForeignKey(Obras, on_delete=models.SET_NULL, null=True, blank=True)
+    veiculo = models.ForeignKey(veiculos, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
     data_cadastro = models.DateField(auto_now_add=True)
 
     class Meta:
