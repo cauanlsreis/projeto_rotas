@@ -3,4 +3,5 @@ from .views import ObrasCreateListView  # <-- certifique-se de importar essa vie
 
 urlpatterns = [
     path('', ObrasCreateListView.as_view(), name='obras-list-create'),
+    path('listar', ObrasCreateListView.as_view(), name='obras-listar'),  # GET para listar
 ]

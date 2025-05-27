@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Alojamentos
 from .serializers import AlojamentosSerializer
 
-class AlojamentosCreateView(generics.CreateAPIView):
+class AlojamentosCreateListView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Alojamentos.objects.all()
     serializer_class = AlojamentosSerializer

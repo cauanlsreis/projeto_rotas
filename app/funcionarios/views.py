@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Funcionarios
 from .serializers import FuncionariosSerializer
 
-class FuncionariosCreateView(generics.CreateAPIView):
+class FuncionariosCreateListView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Funcionarios.objects.all()
     serializer_class = FuncionariosSerializer
