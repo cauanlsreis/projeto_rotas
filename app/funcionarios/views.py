@@ -1,9 +1,11 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import Funcionarios
 from .serializers import FuncionariosSerializer
 
 class FuncionariosCreateView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Funcionarios.objects.all()
     serializer_class = FuncionariosSerializer
 
@@ -17,5 +19,6 @@ class FuncionariosCreateView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
     
 class FuncionariosListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Funcionarios.objects.all()
     serializer_class = FuncionariosSerializer

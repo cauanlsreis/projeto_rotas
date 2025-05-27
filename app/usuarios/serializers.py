@@ -36,8 +36,15 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('confirmacao_senha')
-        validated_data['senha'] = make_password(validated_data['senha'])
-        return Usuario.objects.create(**validated_data)
+        # Usa o método set_password do modelo customizado
+        usuario = Usuario(
+            email=validated_data['email'],
+            cpf=validated_data['cpf'],
+            nome=validated_data['nome']
+        )
+        usuario.set_password(validated_data['senha'])
+        usuario.save()
+        return usuario
     
     def validate_senha(self, value):
         if len(value) < 6:

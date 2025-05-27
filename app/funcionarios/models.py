@@ -11,7 +11,7 @@ class Funcionarios(models.Model):
     alojamento = models.ForeignKey(Alojamentos, on_delete=models.CASCADE)
     obra = models.ForeignKey(Obras, on_delete=models.SET_NULL, null=True, blank=True)
     veiculo = models.ForeignKey(veiculos, on_delete=models.SET_NULL, null=True, blank=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.SET_NULL, null=True, blank=True)
     data_cadastro = models.DateField(auto_now_add=True)
 
     class Meta:

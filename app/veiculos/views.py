@@ -1,9 +1,20 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import veiculos
 from .serializers import VeiculoSerializer
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+class CustomJWTAuthentication(JWTAuthentication):
+    def authenticate(self, request):
+        try:
+            return super().authenticate(request)
+        except AuthenticationFailed:
+            raise AuthenticationFailed("Você não inseriu corretamente as credenciais de autenticação")
 
 class VeiculoCreateListView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = veiculos.objects.all()
     serializer_class = VeiculoSerializer
 

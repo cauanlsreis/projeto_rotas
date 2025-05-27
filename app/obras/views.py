@@ -1,9 +1,11 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import Obras
 from .serializers import ObrasSerializer
 
 class ObrasCreateListView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Obras.objects.all()
     serializer_class = ObrasSerializer
 
