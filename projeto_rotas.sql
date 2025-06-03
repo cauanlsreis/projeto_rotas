@@ -55,6 +55,8 @@ CREATE TABLE `veiculos` (
   `placa` VARCHAR(10) NOT NULL,
   `data_cadastro` DATE NOT NULL DEFAULT CURRENT_DATE,
   `obra_id` INT DEFAULT NULL,
+  `latitude` DECIMAL(10,7) DEFAULT NULL,
+  `longitude` DECIMAL(10,7) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE (`placa`),
   KEY `obra_id` (`obra_id`),
