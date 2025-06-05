@@ -12,3 +12,8 @@ class AlojamentosListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Alojamentos.objects.all()
     serializer_class = AlojamentosSerializer
+
+class AlojamentosDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Alojamentos.objects.all()
+    serializer_class = AlojamentosSerializer

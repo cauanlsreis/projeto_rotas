@@ -34,7 +34,7 @@ class LoginView(APIView):
     
     def post(self, request):
         email = request.data.get('email')
-        senha = request.data.get('password')
+        senha = request.data.get('senha')
         from .models import Usuario
         try:
             usuario = Usuario.objects.get(email=email)

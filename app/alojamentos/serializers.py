@@ -22,28 +22,27 @@ class AlojamentosSerializer(serializers.ModelSerializer):
                     'blank': 'O campo cidade é obrigatório.',
                 }
             },
-             'numero': {
+            'numero': {
                 'error_messages': {
                     'blank': 'O campo numero é obrigatório.',
                 }
             },
-             'endereco': {
+            'endereco': {
                 'error_messages': {
                     'blank': 'O campo endereço é obrigatório.',
                 }
             },
-             'latitude': {
+            'latitude': {
                 'error_messages': {
                     'blank': 'O campo latitude é obrigatório.',
                 }
             },
-             'longitude': {
+            'longitude': {
                 'error_messages': {
                     'blank': 'O campo longitude é obrigatório.',
                 }
             },
         }
-        
 
     def validate_estado(self, value):
         if len(value) != 2:
@@ -61,11 +60,12 @@ class AlojamentosSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        obrigatorio = ['nome', 'estado', 'cidade', 'latitude', 'longitude', 'numero', 'endereco']
-        for campo in obrigatorio:
-            if not data.get(campo):
-                raise serializers.ValidationError({campo: f"O campo {campo} é obrigatório."})
+        # Se for criação (self.instance é None)
         if not self.instance:
+            obrigatorio = ['nome', 'estado', 'cidade', 'latitude', 'longitude', 'numero', 'endereco']
+            for campo in obrigatorio:
+                if not data.get(campo):
+                    raise serializers.ValidationError({campo: f"O campo {campo} é obrigatório."})
             if Alojamentos.objects.filter(
                 endereco=data['endereco'],
                 numero=data['numero'],
@@ -75,5 +75,8 @@ class AlojamentosSerializer(serializers.ModelSerializer):
                 longitude=data['longitude']
             ).exists():
                 raise serializers.ValidationError({"endereco": "Alojamentos ja cadastrado com esse endereço."})
-            
+        else:
+            # Atualização: só o nome é obrigatório
+            if 'nome' not in data or not data.get('nome'):
+                raise serializers.ValidationError({'nome': "O campo nome é obrigatório."})
         return data

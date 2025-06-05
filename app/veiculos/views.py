@@ -6,14 +6,7 @@ from .serializers import VeiculoSerializer
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-class CustomJWTAuthentication(JWTAuthentication):
-    def authenticate(self, request):
-        try:
-            return super().authenticate(request)
-        except AuthenticationFailed:
-            raise AuthenticationFailed("Você não inseriu corretamente as credenciais de autenticação")
-
-class VeiculoCreateListView(generics.ListCreateAPIView):
+class VeiculosCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = veiculos.objects.all()
     serializer_class = VeiculoSerializer
@@ -27,3 +20,13 @@ class VeiculoCreateListView(generics.ListCreateAPIView):
             "mensagem": "Veículo cadastrado com sucesso!",
             "dados": serializer.data
         }, status=status.HTTP_201_CREATED, headers=headers)
+
+class VeiculosListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = veiculos.objects.all()
+    serializer_class = VeiculoSerializer
+
+class VeiculosDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = veiculos.objects.all()
+    serializer_class = VeiculoSerializer

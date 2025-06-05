@@ -4,7 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Obras
 from .serializers import ObrasSerializer
 
-class ObrasCreateListView(generics.ListCreateAPIView):
+
+class ObrasCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Obras.objects.all()
     serializer_class = ObrasSerializer
@@ -22,3 +23,15 @@ class ObrasCreateListView(generics.ListCreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers
         )
+
+
+class ObrasListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Obras.objects.all()
+    serializer_class = ObrasSerializer
+
+
+class ObrasDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Obras.objects.all()
+    serializer_class = ObrasSerializer

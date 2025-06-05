@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import ObrasCreateListView  # <-- certifique-se de importar essa view
+from .views import ObrasCreateView, ObrasListView, ObrasDetailView 
 
 urlpatterns = [
-    path('', ObrasCreateListView.as_view(), name='obras-list-create'),
-    path('listar', ObrasCreateListView.as_view(), name='obras-listar'),  # GET para listar
+    path('cadastrar/', ObrasCreateView.as_view(), name='obras-create'),
+    path('', ObrasListView.as_view(),name='obras-list'),
+    path('<int:pk>/', ObrasDetailView.as_view(),name='obras-detail')
 ]

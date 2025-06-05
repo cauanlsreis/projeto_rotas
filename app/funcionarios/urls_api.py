@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import FuncionariosCreateListView, FuncionariosListView
+from .views import FuncionariosCreateView, FuncionariosListView, FuncionariosDetailView
 
 urlpatterns = [
-    path('', FuncionariosCreateListView.as_view(), name='cadastrar_funcionario'),
-    path('visualizar', FuncionariosListView.as_view(), name='listar-funcionarios'),
-    path('listar', FuncionariosListView.as_view(), name='funcionarios-listar'),  # GET para listar
+    path('cadastrar/', FuncionariosCreateView.as_view(), name='funcionarios-create'),
+    path('', FuncionariosListView.as_view(), name='funcionarios-list'),
+    path('<int:pk>/', FuncionariosDetailView.as_view(), name='funcionarios-detail'),  # GET para listar
 ]

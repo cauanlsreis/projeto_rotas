@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Funcionarios
 from .serializers import FuncionariosSerializer
 
-class FuncionariosCreateListView(generics.ListCreateAPIView):
+class FuncionariosCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Funcionarios.objects.all()
     serializer_class = FuncionariosSerializer
@@ -19,6 +19,11 @@ class FuncionariosCreateListView(generics.ListCreateAPIView):
         }, status=status.HTTP_201_CREATED)
     
 class FuncionariosListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Funcionarios.objects.all()
+    serializer_class = FuncionariosSerializer
+
+class FuncionariosDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Funcionarios.objects.all()
     serializer_class = FuncionariosSerializer

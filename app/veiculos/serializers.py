@@ -20,23 +20,38 @@ class VeiculoSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
-        obrigatorios = ['quantidade_passageiros', 'modelo', 'cor', 'placa']
-        for campo in obrigatorios:
-            if not data.get(campo):
-                raise serializers.ValidationError({campo: f"O campo {campo} é obrigatório."})
+        if not self.instance:
+            # Criação: todos obrigatórios
+            obrigatorios = ['quantidade_passageiros', 'modelo', 'cor', 'placa']
+            for campo in obrigatorios:
+                if not data.get(campo):
+                    raise serializers.ValidationError(
+                        {campo: f"O campo {campo} é obrigatório."})
 
-        if veiculos.objects.filter(placa=data['placa']).exists():
-            raise serializers.ValidationError({'placa': 'Placa já cadastrada.'})
-
+            if veiculos.objects.filter(placa=data['placa']).exists():
+                raise serializers.ValidationError(
+                    {'placa': 'Placa já cadastrada.'})
+        else:
+            # Atualização: só a placa é obrigatória
+            if 'placa' not in data or not data.get('placa'):
+                raise serializers.ValidationError(
+                    {'placa': "O campo placa é obrigatório."})
+            # Se a placa foi alterada, verifica duplicidade
+            if 'placa' in data and data['placa'] != self.instance.placa:
+                if veiculos.objects.filter(placa=data['placa']).exists():
+                    raise serializers.ValidationError(
+                        {'placa': 'Placa já cadastrada.'})
         return data
 
     def validate_placa(self, value):
         padrao = r'^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$'
         if not re.match(padrao, value.upper()):
-            raise serializers.ValidationError("Formato de placa inválido. Use o padrão ABC1D23.")
+            raise serializers.ValidationError(
+                "Formato de placa inválido. Use o padrão ABC1D23.")
         return value.upper()
 
     def validate_quantidade_passageiros(self, value):
         if value <= 0:
-            raise serializers.ValidationError("Quantidade de passageiros deve ser um número positivo.")
+            raise serializers.ValidationError(
+                "Quantidade de passageiros deve ser um número positivo.")
         return value
