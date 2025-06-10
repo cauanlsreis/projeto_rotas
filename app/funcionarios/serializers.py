@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Funcionarios
 from app.alojamentos.models import Alojamentos
+from django.db.models import Count, F
 
 
 class AlojamentoInlineSerializer(serializers.ModelSerializer):
@@ -11,6 +12,24 @@ class AlojamentoInlineSerializer(serializers.ModelSerializer):
 
 
 class FuncionariosSerializer(serializers.ModelSerializer):
+
+    alojamento = serializers.PrimaryKeyRelatedField(
+        queryset=Alojamentos.objects.annotate(
+            # Cria um campo temporário 'num_funcionarios' em cada alojamento
+            num_funcionarios=Count('funcionarios') 
+        ).filter(
+            # Filtra para incluir apenas onde a contagem é MENOR que a capacidade
+            num_funcionarios__lt=F('quantidade_de_vagas')
+        ),
+        # Adiciona a mensagem de erro para quando o campo é obrigatório
+        required=True,
+        allow_null=False,
+        error_messages={
+            'required': 'O campo alojamento é obrigatório.',
+            'does_not_exist': 'Alojamento inválido ou sem vagas disponíveis.',
+            'incorrect_type': 'Tipo incorreto. O valor esperado é um ID de alojamento.'
+        }
+    )
 
     class Meta:
         model = Funcionarios

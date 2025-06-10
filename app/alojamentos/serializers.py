@@ -42,6 +42,12 @@ class AlojamentosSerializer(serializers.ModelSerializer):
                     'blank': 'O campo longitude é obrigatório.',
                 }
             },
+            'quantidade_de_vagas': {
+                'error_messages': {
+                    'required': 'O campo quantidade de vagas é obrigatório.',
+                    'invalid': 'A quantidade de vagas deve ser um número inteiro válido.'
+                }
+            }
         }
 
     def validate_estado(self, value):
@@ -58,11 +64,15 @@ class AlojamentosSerializer(serializers.ModelSerializer):
         if not (-180 <= value <= 180):
             raise serializers.ValidationError("Longitude deve estar entre -180 e 180")
         return value
+    def validate_quantidade_de_vagas(self, value):
+        if value > 100: # Exemplo: um alojamento não pode ter mais que 500 vagas
+            raise serializers.ValidationError("A quantidade de vagas não pode ser maior que 500.")
+        return value
 
     def validate(self, data):
         # Se for criação (self.instance é None)
         if not self.instance:
-            obrigatorio = ['nome', 'estado', 'cidade', 'latitude', 'longitude', 'numero', 'endereco']
+            obrigatorio = ['nome', 'estado', 'cidade', 'latitude', 'longitude', 'numero', 'endereco','quantidade_de_vagas']
             for campo in obrigatorio:
                 if not data.get(campo):
                     raise serializers.ValidationError({campo: f"O campo {campo} é obrigatório."})

@@ -13,9 +13,10 @@ class Funcionarios(models.Model):
     veiculo = models.ForeignKey(veiculos, on_delete=models.SET_NULL, null=True, blank=True)
     usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.SET_NULL, null=True, blank=True)
     data_cadastro = models.DateField(auto_now_add=True)
+    alojamento = models.ForeignKey(Alojamentos, on_delete=models.CASCADE,related_name='funcionarios') 
 
     class Meta:
         db_table = 'funcionarios'
 
-    def __str__(self):
+    def __str__(self):  
         return self.nome_completo

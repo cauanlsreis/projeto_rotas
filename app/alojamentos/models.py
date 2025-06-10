@@ -6,6 +6,7 @@ class Alojamentos(models.Model):
     endereco = models.CharField(max_length=150)
     numero  = models.CharField(max_length=10)
     cidade = models.CharField(max_length=100)
+    quantidade_de_vagas = models.PositiveIntegerField(default=0) 
     estado = models.CharField(max_length=2)
     latitude = models.DecimalField(max_digits=9,decimal_places=6)
     longitude = models.DecimalField(max_digits=9,decimal_places=6)

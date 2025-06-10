@@ -19,6 +19,7 @@ CREATE TABLE `alojamentos` (
   `numero` VARCHAR(10) NOT NULL,
   `cidade` VARCHAR(100) NOT NULL,
   `estado` VARCHAR(2) NOT NULL,
+  `quantidade_de_vagas` VARCHAR(250) NOT NULL,
   `data_cadastro` DATE NOT NULL DEFAULT CURRENT_DATE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
