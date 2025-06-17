@@ -30,7 +30,7 @@ class CadastroUsuarioAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
-    permission_classes = []  # Permitir acesso público para login
+    permission_classes = []  
     
     def post(self, request):
         email = request.data.get('email')
