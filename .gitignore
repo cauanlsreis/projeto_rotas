@@ -132,3 +132,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Ignorar arquivos de variáveis de ambiente
+.env
+google-credentials.json

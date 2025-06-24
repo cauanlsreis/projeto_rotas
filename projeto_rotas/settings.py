@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-
+from decouple import config
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'app.veiculos',
     'app.funcionarios',
     'app.usuarios',  # Adicionar o app usuarios
+    'app.rotas',  # Adicionar o app rotas
     'corsheaders',
 ]
 
@@ -156,3 +158,14 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+
+
+# GOOGLE_PROJECT_ID, CREDENTIALS_FILE_NAME e GOOGLE_CREDENTIALS_PATH:
+# Usados para autenticação e consumo da API do Google Maps.
+
+GOOGLE_PROJECT_ID = config('GOOGLE_PROJECT_ID')
+CREDENTIALS_FILE_NAME = config('GOOGLE_APPLICATION_CREDENTIALS', default='google-credentials.json')
+GOOGLE_CREDENTIALS_PATH = os.path.join(BASE_DIR, CREDENTIALS_FILE_NAME)
+
+# MAPS_API_KEY: Chave da API do Google Maps 
+MAPS_API_KEY = config('MAPS_API_KEY')

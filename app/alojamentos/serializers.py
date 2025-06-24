@@ -85,8 +85,4 @@ class AlojamentosSerializer(serializers.ModelSerializer):
                 longitude=data['longitude']
             ).exists():
                 raise serializers.ValidationError({"endereco": "Alojamentos ja cadastrado com esse endereço."})
-        else:
-            # Atualização: só o nome é obrigatório
-            if 'nome' not in data or not data.get('nome'):
-                raise serializers.ValidationError({'nome': "O campo nome é obrigatório."})
-        return data
+            return data
