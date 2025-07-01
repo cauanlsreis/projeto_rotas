@@ -1,4 +1,5 @@
 import requests
+import json
 from django.conf import settings
 from django.db.models import Count
 from datetime import datetime, timedelta
@@ -172,6 +173,18 @@ class OtimizarRotasAPIView(APIView):
             api_response = requests.post(url, json=payload, headers=headers)
             api_response.raise_for_status()
             result_data = api_response.json()
+
+           
+            # --- LINHAS MODIFICADAS PARA O UPGRADE COMEÇAM AQUI ---
+            total_distance_km = 0
+            # A API já fornece a distância total agregada para todos os veículos
+            if 'metrics' in result_data and 'aggregatedRouteMetrics' in result_data['metrics']:
+                if 'travelDistanceMeters' in result_data['metrics']['aggregatedRouteMetrics']:
+                    total_distance_km = result_data['metrics']['aggregatedRouteMetrics']['travelDistanceMeters'] / 1000
+            
+            result_data['total_distance_all_vehicles_km'] = total_distance_km
+            # --- LINHAS MODIFICADAS PARA O UPGRADE TERMINAM AQUI ---
+
 
             return Response(result_data, status=status.HTTP_200_OK)
 
