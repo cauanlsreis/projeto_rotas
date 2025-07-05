@@ -1,13 +1,10 @@
 # app/rotas/serializers.py
 
 from rest_framework import serializers
-from .models import Rota
+from .models import Rota  # ajuste se o nome do modelo for diferente
+
 
 class RotaSerializer(serializers.ModelSerializer):
-    """
-    Serializer para o modelo Rota.
-    """
     class Meta:
-        # '__all__' inclui todos os campos do seu modelo Rota na resposta da API.
-        # Isso inclui os novos campos que sugerimos (distancia, duracao, etc.)
+        model = Rota
         fields = '__all__'
