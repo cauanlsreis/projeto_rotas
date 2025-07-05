@@ -88,8 +88,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'projeto_rotas',
-        'USER': 'admin_aluno',
-        'PASSWORD': '12345678',
+        'USER': 'root',
+        'PASSWORD': 'admin.AA',
         'HOST': 'localhost',
         'PORT': '3306',
     }
