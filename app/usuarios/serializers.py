@@ -57,3 +57,8 @@ class UsuarioSerializer(serializers.ModelSerializer):
         if not re.match(r'^\d{11}$', value):
             raise serializers.ValidationError("O CPF deve conter exatamente 11 dígitos numéricos.")
         return value
+
+class UsuarioDetalheSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = ['id',  'email', 'nome']

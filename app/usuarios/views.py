@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
+from .serializers import UsuarioDetalheSerializer
 
 # Create your views here.
 
@@ -55,6 +56,12 @@ class LoginView(APIView):
 class UsuarioMeView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        serializer = UsuarioSerializer(request.user)
+    def get(self, request, format=None):
+
+        usuario = request.user
+        
+        # Serializa os dados do usuário logado
+        serializer = UsuarioDetalheSerializer(usuario)
+        
+        # Retorna a resposta
         return Response(serializer.data)
