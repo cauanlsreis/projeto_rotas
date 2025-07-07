@@ -34,7 +34,7 @@ class FuncionariosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Funcionarios
         fields = ['id', 'nome_completo', 'cpf', 'alojamento',
-                  'obra', 'veiculo', 'usuario', 'data_cadastro']
+                  'obra', 'data_cadastro']
 
     def validate(self, data):
         if not self.instance:

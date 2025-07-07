@@ -89,8 +89,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'projeto_rotas',
-        'USER': 'admin_aluno',
-        'PASSWORD': '12345678',
+        'USER': 'root',
+        'PASSWORD': 'admin.AA',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -170,3 +170,8 @@ GOOGLE_CREDENTIALS_PATH = os.path.join(BASE_DIR, CREDENTIALS_FILE_NAME)
 
 # MAPS_API_KEY: Chave da API do Google Maps 
 MAPS_API_KEY = config('MAPS_API_KEY')
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': None,
+}
