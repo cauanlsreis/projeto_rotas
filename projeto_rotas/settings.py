@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-from decouple import config
 import os
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,13 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(ab4chojv)a(nx7agxre1^256mvt&uevyzvou!6o$3rz!1ilr#'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -86,14 +85,7 @@ WSGI_APPLICATION = 'projeto_rotas.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'projeto_rotas',
-        'USER': 'admin_aluno',
-        'PASSWORD': '12345678',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+    'default': dj_database_url.config(conn_max_age=600)
 }
 
 
@@ -164,9 +156,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 # GOOGLE_PROJECT_ID, CREDENTIALS_FILE_NAME e GOOGLE_CREDENTIALS_PATH:
 # Usados para autenticação e consumo da API do Google Maps.
 
-GOOGLE_PROJECT_ID = config('GOOGLE_PROJECT_ID')
-CREDENTIALS_FILE_NAME = config('GOOGLE_APPLICATION_CREDENTIALS', default='google-credentials.json')
-GOOGLE_CREDENTIALS_PATH = os.path.join(BASE_DIR, CREDENTIALS_FILE_NAME)
+GOOGLE_PROJECT_ID = os.environ.get('GOOGLE_PROJECT_ID')
+CREDENTIALS_FILE_NAME = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', 'google-credentials.json')
 
 # MAPS_API_KEY: Chave da API do Google Maps 
-MAPS_API_KEY = config('MAPS_API_KEY')
+MAPS_API_KEY = os.environ.get('MAPS_API_KEY')
