@@ -10,6 +10,10 @@ class veiculos(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     ativo = models.BooleanField(default=True)
+    endereco = models.CharField(max_length=150)
+    numero  = models.CharField(max_length=10)
+    cidade = models.CharField(max_length=100)
+    estado = models.CharField(max_length=2)
     data_cadastro = models.DateField(auto_now_add=True)
     obra_id = models.ForeignKey(Obras, on_delete=models.SET_NULL, null=True, blank=True, related_name='veiculos_associados') 
 

@@ -10,8 +10,6 @@ class Funcionarios(models.Model):
     cpf = models.CharField(max_length=14, unique=True)
     alojamento = models.ForeignKey(Alojamentos, on_delete=models.CASCADE)
     obra = models.ForeignKey(Obras, on_delete=models.SET_NULL, null=True, blank=True)
-    veiculo = models.ForeignKey(veiculos, on_delete=models.SET_NULL, null=True, blank=True)
-    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.SET_NULL, null=True, blank=True)
     data_cadastro = models.DateField(auto_now_add=True)
     alojamento = models.ForeignKey(Alojamentos, on_delete=models.CASCADE,related_name='funcionarios') 
 
