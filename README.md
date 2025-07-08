@@ -76,9 +76,24 @@ python manage.py test app.alojamentos.tests.test_models.TestAlojamentosModel.tes
    Total de módulos testados: 18
    Módulos que passaram: 18 ✅
    Módulos que falharam: 0 ❌
-   Total de testes executados: 23
+   Total de testes executados: 29
 🎉 Todos os testes passaram!
 ```
+
+### 📊 Cobertura de Código
+```
+🎯 COBERTURA ATUAL: 53%
+```
+
+**Como analisar cobertura:**
+```bash
+python run_coverage.py
+```
+
+**Áreas prioritárias para melhoria:**
+- 🚨 Authentication (0% - Crítico)
+- 🔴 Serializers (33-47% - Baixo)  
+- 🟡 Views complexas (21-82% - Variável)
 
 ## 🛠️ Instalação e Configuração
 
@@ -127,6 +142,7 @@ python manage.py runserver
 ## 📚 Documentação
 
 - **[README_TESTS.md](README_TESTS.md)** - Guia completo de testes automatizados
+- **[COVERAGE_GUIDE.md](COVERAGE_GUIDE.md)** - Análise de cobertura de código
 - **API Documentation** - Disponível via django-rest-framework
 - **Swagger/OpenAPI** - Interface interativa da API
 
@@ -171,9 +187,23 @@ class TestMeuModel(TestCase):
 # Execute os testes antes de cada commit
 python run_tests.py
 
+# Análise de cobertura de código
+python run_coverage.py
+
 # Para desenvolvimento específico
 python manage.py test app.funcionarios.tests.test_models --verbosity=2
 ```
+
+## 🚀 Próximos Passos
+
+- [ ] **Melhorar cobertura de código para 80%+**
+  - [ ] Implementar testes de autenticação (0% → 80%)
+  - [ ] Adicionar testes de serializers (33% → 80%)  
+  - [ ] Expandir testes de views complexas (21% → 75%)
+- [ ] Implementar testes de integração API
+- [ ] Adicionar testes de performance
+- [ ] Implementar CI/CD com GitHub Actions
+- [ ] Adicionar monitoramento e logs
 
 ---
 
