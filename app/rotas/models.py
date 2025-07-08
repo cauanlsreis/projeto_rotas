@@ -19,6 +19,9 @@ class Rota(models.Model):
     veiculo = models.ForeignKey(veiculos, on_delete=models.SET_NULL, null=True)
     veiculo_label = models.CharField(max_length=100, blank=True, null=True)
     ordem_paradas = models.JSONField(help_text="Detalhes completos da rota, incluindo visitas, tempos e distâncias")
+
+    polyline = models.TextField(blank=True, null=True, help_text="Polyline codificada para desenhar a rota no mapa")
+
     distancia_total_metros = models.IntegerField(null=True, blank=True)
     duracao_total_segundos = models.IntegerField(null=True, blank=True)
 

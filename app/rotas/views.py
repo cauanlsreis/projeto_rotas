@@ -40,7 +40,12 @@ class OtimizarRotasAPIView(APIView):
             obra_destino = Obras.objects.get(id=obra_id)
             alojamentos_com_demanda = (
                 Funcionarios.objects.filter(obra=obra_destino)
-                .values('alojamento_id', 'alojamentonome', 'alojamentolatitude', 'alojamento_longitude')
+                .values(
+                    'alojamento__id',
+                    'alojamento__nome',
+                    'alojamento__latitude',
+                    'alojamento__longitude'
+                )
                 .annotate(demanda_real=Count('id'))
                 .filter(demanda_real__gt=0)
             )
@@ -53,7 +58,7 @@ class OtimizarRotasAPIView(APIView):
                 except veiculos.DoesNotExist:
                     return Response({"erro": f"Veículo com id={veiculo_id} não encontrado ou está inativo."}, status=status.HTTP_404_NOT_FOUND)
             else:
-                veiculos_para_otimizar = list(veiculos.objects.filter(ativo=True, latitude_isnull=False, longitude_isnull=False))
+                veiculos_para_otimizar = list(veiculos.objects.filter(ativo=True, latitude__isnull=False, longitude__isnull=False))
 
             if not alojamentos_com_demanda or not veiculos_para_otimizar:
                 return Response({"info": "Não há funcionários ou veículos disponíveis para a otimização."}, status=status.HTTP_404_NOT_FOUND)
@@ -85,25 +90,37 @@ class OtimizarRotasAPIView(APIView):
             } for v in veiculos_para_otimizar]
 
             # 6. OTIMIZAÇÃO DA IDA
-            shipments_ida = [{"label": f"Coleta em {aloj['alojamento_nome']}", "pickups": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(aloj['alojamentolatitude']), "longitude": float(aloj['alojamento_longitude'])}}}, "load_demands": {"funcionarios": {"amount": str(aloj['demanda_real'])}}}], "deliveries": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(obra_destino.latitude), "longitude": float(obra_destino.longitude)}}}}]} for aloj in alojamentos_com_demanda]
-            payload_ida = {"model": {"shipments": shipments_ida, "vehicles": vehicles_data}}
+            shipments_ida = [{"label": f"Coleta em {aloj['alojamento__nome']}", "pickups": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(aloj['alojamento__latitude']), "longitude": float(aloj['alojamento__longitude'])}}}, "load_demands": {"funcionarios": {"amount": str(aloj['demanda_real'])}}}], "deliveries": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(obra_destino.latitude), "longitude": float(obra_destino.longitude)}}}}]} for aloj in alojamentos_com_demanda]
+            payload_ida = {
+                "model": {"shipments": shipments_ida, "vehicles": vehicles_data},
+                "populatePolylines": True
+            }
             resultado_ida = self._chamar_api_otimizacao(project_id, headers, payload_ida)
 
             # 7. OTIMIZAÇÃO DA VOLTA
-            shipments_volta = [{"label": f"Retorno para {aloj['alojamento_nome']}", "pickups": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(obra_destino.latitude), "longitude": float(obra_destino.longitude)}}}, "load_demands": {"funcionarios": {"amount": str(aloj['demanda_real'])}}}], "deliveries": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(aloj['alojamentolatitude']), "longitude": float(aloj['alojamento_longitude'])}}}}]} for aloj in alojamentos_com_demanda]
-            payload_volta = {"model": {"shipments": shipments_volta, "vehicles": vehicles_data}}
+            shipments_volta = [{"label": f"Retorno para {aloj['alojamento__nome']}", "pickups": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(obra_destino.latitude), "longitude": float(obra_destino.longitude)}}}, "load_demands": {"funcionarios": {"amount": str(aloj['demanda_real'])}}}], "deliveries": [{"arrival_waypoint": {"location": {"lat_lng": {"latitude": float(aloj['alojamento__latitude']), "longitude": float(aloj['alojamento__longitude'])}}}}]} for aloj in alojamentos_com_demanda]
+            payload_volta = {
+                "model": {"shipments": shipments_volta, "vehicles": vehicles_data},
+                "populatePolylines": True
+            }
             resultado_volta = self._chamar_api_otimizacao(project_id, headers, payload_volta)
 
             # 8. PROCESSAR E SALVAR RESULTADOS
             descricao_base = request.data.get('descricao', f"Transporte para {obra_destino.nome}")
             rotas_salvas = []
-            
+
             def salvar_rotas(resultado_api, tipo_rota):
+                # --- DEBUG: Imprime a resposta da API no log de erros ---
+                print(f"--- RESPOSTA DO GOOGLE PARA {tipo_rota} ---")
+                print(json.dumps(resultado_api, indent=2))
+                print("-----------------------------------------")
+
                 for rota_gerada in resultado_api.get('routes', []):
                     placa_veiculo = rota_gerada.get('vehicleLabel', '').split(' - ')[-1]
                     veiculo_obj = veiculos.objects.filter(placa=placa_veiculo).first()
                     rota_metrics = rota_gerada.get('metrics', {})
-                    
+                    encoded_polyline = rota_gerada.get('routePolyline', {}).get('points')
+
                     nova_rota = Rota.objects.create(
                         descricao_transporte=descricao_base,
                         tipo_trecho=tipo_rota,
@@ -111,11 +128,12 @@ class OtimizarRotasAPIView(APIView):
                         veiculo=veiculo_obj,
                         veiculo_label=rota_gerada.get('vehicleLabel', ''),
                         ordem_paradas=rota_gerada.get('visits', []),
+                        polyline=encoded_polyline,
                         distancia_total_metros=rota_metrics.get('travelDistanceMeters'),
                         duracao_total_segundos=int(rota_metrics.get('travelDuration', '0s').replace('s', ''))
                     )
                     rotas_salvas.append(RotaSerializer(nova_rota).data)
-            
+
             salvar_rotas(resultado_ida, "IDA")
             salvar_rotas(resultado_volta, "VOLTA")
 
@@ -145,42 +163,25 @@ class OtimizarRotasAPIView(APIView):
             return Response(resposta_final, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            print(f"ERRO INESPERADO NA VIEW: {type(e)._name_} - {e}")
+            print(f"ERRO INESPERADO NA VIEW: {type(e).__name__} - {e}")
             return Response({"erro": "Ocorreu um erro interno no servidor.", "detalhes": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # --- Views de Listagem e Detalhe (COM CORREÇÃO E AGRUPAMENTO) ---
 class RotaListView(generics.ListAPIView):
-    """
-    Listagem de rotas cadastradas, agrupadas por operação e veículo.
-    Pode ser filtrada por uma descrição exata via query param 'descricao_transporte'.
-    Ex: /api/rotas/rotas/?descricao_transporte=Transporte%20Diario
-    """
     permission_classes = [IsAuthenticated]
     serializer_class = RotaSerializer
 
     def get_queryset(self):
-        """
-        Sobrescreve o método padrão para aplicar o filtro.
-        Se nenhum filtro for passado, retorna todas as rotas.
-        """
         queryset = Rota.objects.all().order_by('-data_geracao', 'descricao_transporte', 'veiculo_label')
-        
         descricao = self.request.query_params.get('descricao_transporte', None)
-        
         if descricao is not None:
             queryset = queryset.filter(descricao_transporte=descricao)
-            
         return queryset
 
     def list(self, request, *args, **kwargs):
-        """
-        Sobrescreve o método 'list' para agrupar os resultados de forma organizada.
-        """
         queryset = self.get_queryset()
         rotas_serializadas = self.get_serializer(queryset, many=True).data
-
-        # 1. Agrupa todos os trechos por operação (pela descrição do transporte)
         operacoes = {}
         for rota in rotas_serializadas:
             descricao = rota.get('descricao_transporte')
@@ -188,11 +189,11 @@ class RotaListView(generics.ListAPIView):
                 operacoes[descricao] = []
             operacoes[descricao].append(rota)
 
-        # 2. Processa cada operação para criar um resumo por veículo
         resposta_final = []
         for descricao, trechos in operacoes.items():
             resumo_por_veiculo = {}
             distancia_total_operacao_m = 0
+            id_rota = trechos[0].get('id') if trechos else None
 
             for trecho in trechos:
                 label = trecho.get('veiculo_label')
@@ -206,19 +207,18 @@ class RotaListView(generics.ListAPIView):
                         "duracao_total_segundos": 0,
                         "trechos_detalhados": []
                     }
-                
+
                 resumo_por_veiculo[label]["distancia_total_metros"] += distancia_trecho_m
                 resumo_por_veiculo[label]["duracao_total_segundos"] += trecho.get('duracao_total_segundos') or 0
                 resumo_por_veiculo[label]["trechos_detalhados"].append(trecho)
 
-            # Formata a lista de resumos de veículos para a resposta
             lista_veiculos_formatada = []
             for label, data in resumo_por_veiculo.items():
                 data["distancia_total_km"] = round(data.pop("distancia_total_metros") / 1000, 2)
                 lista_veiculos_formatada.append(data)
 
-            # Adiciona a operação completa à resposta final
             operacao_formatada = {
+                "id_rota": id_rota,
                 "descricao_transporte": descricao,
                 "distancia_total_operacao_km": round(distancia_total_operacao_m / 1000, 2),
                 "resumo_por_veiculo": lista_veiculos_formatada
@@ -228,7 +228,27 @@ class RotaListView(generics.ListAPIView):
         return Response(resposta_final)
 
 class RotaDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Detalhe, atualização e exclusão de uma rota.
+    Ao deletar, apaga toda a operação de transporte (todos os trechos com a mesma descrição).
+    """
     permission_classes = [IsAuthenticated]
     queryset = Rota.objects.all()
     serializer_class = RotaSerializer
     lookup_field = 'id'
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Sobrescreve o método destroy para deletar toda a operação.
+        """
+        instance = self.get_object()
+        descricao_para_deletar = instance.descricao_transporte
+        if descricao_para_deletar:
+            rotas_da_operacao = Rota.objects.filter(descricao_transporte=descricao_para_deletar)
+            count = rotas_da_operacao.count()
+            rotas_da_operacao.delete()
+            return Response(
+                {"mensagem": f"{count} trechos de rota da operação '{descricao_para_deletar}' foram deletados com sucesso."},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        return super().destroy(request, *args, **kwargs)
